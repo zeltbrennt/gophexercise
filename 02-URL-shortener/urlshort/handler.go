@@ -1,8 +1,11 @@
 package urlshort
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/go-yaml/yaml"
 )
 
 // MapHandler will return an http.HandlerFunc (which also
@@ -13,10 +16,10 @@ import (
 // http.Handler will be called instead.
 func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		redirect, ok := pathsToUrls[r.URL.String()]
+		url, ok := pathsToUrls[r.URL.String()]
 		if ok {
-			log.Println("redirecting to:", redirect)
-			http.Redirect(w, r, redirect, http.StatusSeeOther)
+			log.Println("redirecting to:", url)
+			http.Redirect(w, r, url, http.StatusSeeOther)
 		} else {
 			fallback.ServeHTTP(w, r)
 		}
@@ -35,11 +38,32 @@ func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.Handl
 //     url: https://www.some-url.com/demo
 //
 // The only errors that can be returned all related to having
-// invalid YAML data.
+// invalid YAML data
 //
 // See MapHandler to create a similar http.HandlerFunc via
 // a mapping of paths to urls.
 func YAMLHandler(yml []byte, fallback http.Handler) (http.HandlerFunc, error) {
-	// TODO: Implement this...
-	return fallback.ServeHTTP, nil
+	pathToUrls, err := parseYaml(yml)
+	if err != nil {
+		return nil, fmt.Errorf("parsing yaml failes: %v", err)
+	}
+	return MapHandler(pathToUrls, fallback), nil
+}
+
+type redirect struct {
+	Path string `yaml:"path"`
+	URL  string `yaml:"url"`
+}
+
+func parseYaml(yml []byte) (map[string]string, error) {
+	var redirect []redirect
+	err := yaml.Unmarshal(yml, &redirect)
+	if err != nil {
+		return nil, fmt.Errorf("unmarshalling failed: %v", err)
+	}
+	asMap := make(map[string]string)
+	for _, entry := range redirect {
+		asMap[entry.Path] = entry.URL
+	}
+	return asMap, nil
 }
