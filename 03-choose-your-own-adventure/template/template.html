@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTS-8" />
+    <link rel="stylesheet" href="/static/template.css" />
+    <title>{{.Title}}</title>
+  </head>
+
+  <body>
+    <main>
+      <h1>{{.Title}}</h1>
+      <div id="chapter">
+        {{range .Text}}
+        <p>{{.}}</p>
+        {{end}}
+      </div>
+      <hr />
+
+      <h3>
+        {{if eq .Id "home"}} Welcome home! Play again? {{else}} What do you want
+        to do?{{end}}
+      </h3>
+      <div id="options">
+        {{range .Options}}<a href="{{.Link}}">{{.Text}}</a>{{end}} {{if eq .Id
+        "home"}}<a style="text-align: center" href="/intro">Sure!</a> {{end}}
+      </div>
+    </main>
+  </body>
+</html>
