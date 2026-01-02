@@ -16,8 +16,7 @@ import (
 // http.Handler will be called instead.
 func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		url, ok := pathsToUrls[r.URL.String()]
-		if ok {
+		if url, ok := pathsToUrls[r.URL.Path]; ok {
 			log.Println("redirecting to:", url)
 			http.Redirect(w, r, url, http.StatusSeeOther)
 		} else {
