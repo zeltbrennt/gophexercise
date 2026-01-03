@@ -17,11 +17,11 @@
       <hr />
 
       <h3>
-        {{if eq .Id "home"}} Welcome home! Play again? {{else}} What do you want
+        {{if eq .ID "home"}} Welcome home! Play again? {{else}} What do you want
         to do?{{end}}
       </h3>
       <div id="options">
-        {{range .Options}}<a href="{{.Link}}">{{.Text}}</a>{{end}} {{if eq .Id
+        {{range .Options}}<a href="{{.Link}}">{{.Text}}</a>{{end}} {{if eq .ID
         "home"}}<a style="text-align: center" href="/intro">Sure!</a> {{end}}
       </div>
     </main>

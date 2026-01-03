@@ -1,20 +1,22 @@
 package template
 
 import (
-	"fmt"
+	"adventure/story"
 	"html/template"
 	"os"
 )
 
-func ParseTemplate(path string) (*template.Template, error) {
+func Parse(path string) *template.Template {
 	raw, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("error reading template file: %v", err)
+		panic("no template file found")
 	}
 
-	templ, err := template.New("page").Parse(string(raw))
-	if err != nil {
-		return nil, fmt.Errorf("error creating template: %v", err)
-	}
-	return templ, nil
+	templ := template.Must(template.New("page").Parse(string(raw)))
+	return templ
+}
+
+type TemplateData struct {
+	story.Chapter
+	ID string
 }
