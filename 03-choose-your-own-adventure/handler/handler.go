@@ -10,10 +10,20 @@ import (
 	adventureTemplate "adventure/template"
 )
 
+var (
+	defaultTemplate         *template.Template
+	defaultStaticFileServer http.Handler
+)
+
 type handler struct {
 	Story         story.Story
 	Template      *template.Template
 	StaticHandler http.Handler
+}
+
+func init() {
+	defaultTemplate = adventureTemplate.Parse("template/template.html")
+	defaultStaticFileServer = http.FileServer(http.Dir("./static"))
 }
 
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +49,26 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func New(story story.Story, staticFileHandler http.Handler) http.Handler {
-	template := adventureTemplate.Parse("template/template.html")
-	return handler{Story: story, Template: template, StaticHandler: staticFileHandler}
+// Functional Options :)
+
+type HandlerOption func(h *handler)
+
+func WithTemplate(t *template.Template) HandlerOption {
+	return func(h *handler) {
+		h.Template = t
+	}
+}
+
+func WithStaticFileHandler(sfh http.Handler) HandlerOption {
+	return func(h *handler) {
+		h.StaticHandler = sfh
+	}
+}
+
+func New(story story.Story, opts ...HandlerOption) http.Handler {
+	handler := handler{Story: story, Template: defaultTemplate, StaticHandler: defaultStaticFileServer}
+	for _, opt := range opts {
+		opt(&handler)
+	}
+	return handler
 }

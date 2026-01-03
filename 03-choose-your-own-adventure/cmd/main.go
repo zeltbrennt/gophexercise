@@ -20,8 +20,7 @@ func main() {
 		log.Fatalf("an error occured: %v", err)
 	}
 
-	fs := http.FileServer(http.Dir("./static"))
-	handler := handler.New(story, fs)
+	handler := handler.New(story)
 	log.Printf("listening on port :%d...\n", *port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), handler))
 }
