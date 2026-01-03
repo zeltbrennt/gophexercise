@@ -1,4 +1,4 @@
-package linkparser
+package links
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ type Link struct {
 	Text string
 }
 
-func Parse(file io.Reader) ([]Link, error) {
+func GetAll(file io.Reader) ([]Link, error) {
 	doc, err := html.Parse(file)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing html: %s", err)
@@ -24,16 +24,15 @@ func Parse(file io.Reader) ([]Link, error) {
 		if n.Type == html.ElementNode && n.DataAtom == atom.A {
 			newLink := Link{}
 			newLink.Href = getHrefValue(n)
-			newLink.Text = getInnerHTMLText(n)
+			newLink.Text = getInnerText(n)
 			links = append(links, newLink)
 		}
 	}
-
 	return links, nil
 }
 
-func getHrefValue(n *html.Node) string {
-	for _, a := range n.Attr {
+func getHrefValue(node *html.Node) string {
+	for _, a := range node.Attr {
 		if a.Key == "href" {
 			return a.Val
 		}
@@ -41,18 +40,12 @@ func getHrefValue(n *html.Node) string {
 	return ""
 }
 
-func getInnerHTMLText(n *html.Node) string {
+func getInnerText(node *html.Node) string {
 	var builder strings.Builder
-
-	var walk func(*html.Node)
-	walk = func(n *html.Node) {
+	for n := range node.Descendants() {
 		if n.Type == html.TextNode {
 			builder.WriteString(n.Data)
 		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			walk(c)
-		}
 	}
-	walk(n)
 	return strings.Join(strings.Fields(builder.String()), " ")
 }

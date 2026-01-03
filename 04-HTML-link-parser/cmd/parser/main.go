@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"linkparser/linkparser"
+	"htmlparser/links"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 	if err != nil {
 		panic("file not found")
 	}
-	links, err := linkparser.Parse(file)
+	links, err := links.GetAll(file)
 	if err != nil {
 		panic(err)
 	}
