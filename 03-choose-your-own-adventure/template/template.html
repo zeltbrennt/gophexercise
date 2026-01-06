@@ -8,22 +8,33 @@
 
   <body>
     <main>
-      <h1>{{.Title}}</h1>
-      <div id="chapter">
-        {{range .Text}}
-        <p>{{.}}</p>
-        {{end}}
-      </div>
-      <hr />
+      <div style="flex: 1">
+        <h1>{{.Title}}</h1>
+        <div id="chapter">
+          {{range .Text}}
+          <p>{{.}}</p>
+          {{end}}
+        </div>
+        <hr />
 
-      <h3>
-        {{if eq .ID "home"}} Welcome home! Play again? {{else}} What do you want
-        to do?{{end}}
-      </h3>
-      <div id="options">
-        {{range .Options}}<a href="{{.Link}}">{{.Text}}</a>{{end}} {{if eq .ID
-        "home"}}<a style="text-align: center" href="/intro">Sure!</a> {{end}}
+        <h3>
+          {{if eq .ID "home"}} Welcome home! Play again? {{else}} What do you
+          want to do?{{end}}
+        </h3>
+        <div id="options">
+          {{range .Options}}<a class="next" href="/{{.Link}}">{{.Text}}</a
+          >{{end}} {{if eq .ID "home"}}<a
+            class="next"
+            style="text-align: center"
+            href="/intro"
+            >Sure!</a
+          >
+          {{end}}
+        </div>
       </div>
+      <footer>
+        Inspired by <a href="https://courses.calhoun.io/">Calhoun.io</a>
+      </footer>
     </main>
   </body>
 </html>
