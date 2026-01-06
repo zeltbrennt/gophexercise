@@ -1,15 +1,20 @@
 package main
 
 import (
-	"fmt"
-	"htmlparser/links"
-	"strings"
+	"flag"
+	"log"
+	"os"
+
+	sitemapbuilder "sitemap"
 )
 
 func main() {
-	links, err := links.GetAll(strings.NewReader(`<a href="/foo">bar</a>`))
+	url := flag.String("url", "http://localhost:3000", "URL of the site to get the sitemap from")
+
+	sb := sitemapbuilder.New(*url)
+	err := sb.BuildMap()
 	if err != nil {
-		panic("!")
+		log.Fatalf("sitemapbuilder failed: %s", err)
 	}
-	fmt.Println(links)
+	sb.Write(os.Stdout)
 }
